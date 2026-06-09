@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Instrument+Serif:ital@0;1&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -228,10 +229,96 @@
     min-height: 100vh;
     display: flex;
     align-items: center;
+    gap: 56px;
     padding: 140px 6% 90px;
     position: relative;
   }
-  .hero-inner { max-width: 920px; }
+  .hero-inner { flex: 1 1 540px; max-width: 600px; }
+
+  /* hero preview — signature */
+  .hero-visual {
+    flex: 1 1 420px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.85s forwards;
+  }
+  .preview {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    transform: perspective(1400px) rotateY(-9deg) rotateX(3deg);
+    animation: floaty 7s ease-in-out infinite;
+  }
+  @keyframes floaty {
+    0%,100% { transform: perspective(1400px) rotateY(-9deg) rotateX(3deg) translateY(0); }
+    50%     { transform: perspective(1400px) rotateY(-9deg) rotateX(3deg) translateY(-14px); }
+  }
+  @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+  .pv-window {
+    background: rgba(10,16,28,0.78);
+    border: 1px solid var(--border2);
+    border-radius: 18px;
+    overflow: hidden;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 40px 90px -30px rgba(0,0,0,0.85);
+  }
+  .pv-bar { display:flex; align-items:center; gap:7px; padding:12px 14px; border-bottom:1px solid var(--border); }
+  .pv-dot { width:9px; height:9px; border-radius:50%; background: var(--text3); }
+  .pv-url { margin-left:8px; flex:1; height:22px; border-radius:6px; background: rgba(255,255,255,0.04); display:flex; align-items:center; padding:0 11px; font-size:10.5px; color:var(--text3); letter-spacing:0.02em; }
+  .pv-screen { position:relative; padding:20px; background: linear-gradient(165deg,#08111f,#0b1a2c); }
+  .pv-hero {
+    border-radius:12px;
+    background: linear-gradient(150deg, rgba(22,224,189,0.16), rgba(22,224,189,0.02));
+    border:1px solid var(--teal-line);
+    padding:18px;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:14px;
+  }
+  .pv-eyebrow { font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--teal); margin-bottom:7px; }
+  .pv-clinic { font-family:var(--display); font-weight:800; font-size:18px; letter-spacing:-0.5px; line-height:1.1; margin-bottom:13px; }
+  .pv-clinic span { font-family:var(--serif); font-style:italic; font-weight:400; color:var(--teal); }
+  .pv-cta { display:inline-flex; align-items:center; gap:6px; background:var(--teal); color:#04070f; font-size:10px; font-weight:600; padding:7px 13px; border-radius:100px; }
+  .pv-ekg { position:absolute; right:-2px; bottom:14px; width:120px; height:34px; opacity:0.75; }
+  .pv-ekg polyline { fill:none; stroke:var(--teal); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:240; stroke-dashoffset:240; animation: ekg 2.6s linear infinite; filter: drop-shadow(0 0 5px var(--teal)); }
+  @keyframes ekg { to { stroke-dashoffset:-240; } }
+  .pv-rows { display:flex; flex-direction:column; gap:9px; }
+  .pv-row { display:flex; align-items:center; gap:11px; padding:10px; border-radius:10px; background: rgba(255,255,255,0.025); border:1px solid var(--border); }
+  .pv-ic { width:27px; height:27px; border-radius:8px; background: var(--teal-soft); border:1px solid var(--teal-line); display:grid; place-items:center; font-size:13px; flex-shrink:0; }
+  .pv-meta { flex:1; display:flex; flex-direction:column; gap:6px; }
+  .pv-l { height:7px; border-radius:4px; background: rgba(255,255,255,0.10); }
+  .pv-l.s { width:55%; height:6px; background: rgba(255,255,255,0.06); }
+  .pv-toast {
+    position:absolute; left:-26px; bottom:36px;
+    display:flex; align-items:center; gap:10px;
+    background: rgba(8,13,24,0.94);
+    border:1px solid var(--teal-line);
+    border-radius:14px;
+    padding:11px 14px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 18px 40px -16px rgba(0,0,0,0.7);
+    animation: bob 4.5s ease-in-out infinite;
+  }
+  .pv-toast .tick { width:24px; height:24px; border-radius:50%; background:var(--teal); display:grid; place-items:center; flex-shrink:0; }
+  .pv-toast .tick svg { width:13px; height:13px; }
+  .pv-toast .t-title { font-size:11.5px; font-weight:600; color:var(--text); line-height:1.2; }
+  .pv-toast .t-sub { font-size:10px; color:var(--text3); margin-top:2px; }
+  .pv-chip {
+    position:absolute; right:-18px; top:28px;
+    display:flex; align-items:center; gap:7px;
+    background: rgba(8,13,24,0.94);
+    border:1px solid var(--border2);
+    border-radius:100px;
+    padding:8px 14px;
+    font-size:11px; color:var(--text2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 16px 36px -16px rgba(0,0,0,0.7);
+    animation: bob 4.5s ease-in-out infinite 0.4s;
+  }
+  .pv-chip .live { width:7px; height:7px; border-radius:50%; background:var(--teal); box-shadow:0 0 8px var(--teal); }
 
   .badge {
     display: inline-flex;
@@ -683,6 +770,8 @@
     height: 70px;
     opacity: 0.5;
   }
+  .cta-pulse polyline { stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: ekgWide 5s linear infinite; }
+  @keyframes ekgWide { to { stroke-dashoffset: -1400; } }
   .cta h2 { margin-bottom: 14px; }
   .cta-sub { font-size: 17px; color: var(--text2); font-weight: 300; max-width: 480px; margin: 0 auto 40px; }
   .btn-wa {
@@ -740,6 +829,57 @@
     animation: ripple 2s ease-out infinite;
   }
 
+  /* ── FAQ ── */
+  .faq-wrap { max-width: 780px; }
+  .faq {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--glass);
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color .3s, background .3s;
+  }
+  .faq[open] { border-color: var(--teal-line); background: rgba(22,224,189,0.035); }
+  .faq summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    font-family: var(--display);
+    font-size: 16.5px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary:focus-visible { outline: 2px solid var(--teal); outline-offset: -2px; }
+  .q-ic { width:26px; height:26px; flex-shrink:0; border-radius:50%; border:1px solid var(--border2); display:grid; place-items:center; position:relative; transition: border-color .3s, background .3s; }
+  .faq[open] .q-ic { background: var(--teal-soft); border-color: var(--teal-line); }
+  .q-ic::before, .q-ic::after { content:''; position:absolute; background: var(--text2); border-radius:2px; transition: transform .3s, background .3s; }
+  .q-ic::before { width:11px; height:1.6px; }
+  .q-ic::after { width:1.6px; height:11px; }
+  .faq[open] .q-ic::after { transform: scaleY(0); }
+  .faq[open] .q-ic::before { background: var(--teal); }
+  .faq-a { padding: 0 24px 24px; font-size:14.5px; line-height:1.7; color: var(--text2); font-weight:300; max-width:660px; }
+
+  /* hero visual responsive */
+  @media (max-width: 1080px) {
+    .hero { gap: 36px; }
+    .preview { max-width: 380px; }
+  }
+  @media (max-width: 880px) {
+    .hero-visual { display: none; }
+    .hero-inner { max-width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .preview, .pv-toast, .pv-chip { animation: none !important; }
+    .pv-ekg polyline, .cta-pulse polyline { animation: none; stroke-dashoffset: 0; }
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 880px) {
     body { cursor: auto; }
@@ -789,6 +929,7 @@
     <li><a href="#layanan">Layanan</a></li>
     <li><a href="#harga">Harga</a></li>
     <li><a href="#proses">Proses</a></li>
+    <li><a href="#faq">FAQ</a></li>
     <li><a href="https://wa.me/6285143289159?text=Halo,%20saya%20tertarik%20membuat%20website%20klinik" class="nav-cta">Konsultasi Gratis</a></li>
   </ul>
   <button class="burger" id="burger">☰</button>
@@ -820,6 +961,36 @@
       <div class="stat">
         <div class="stat-num"><span data-count="100">0</span><span class="accent">%</span></div>
         <div class="stat-label">Responsif di HP</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="preview">
+      <span class="pv-chip"><span class="live"></span> Online 24 jam</span>
+      <div class="pv-window">
+        <div class="pv-bar">
+          <span class="pv-dot"></span><span class="pv-dot"></span><span class="pv-dot"></span>
+          <span class="pv-url">kliniksehatsentosa.id</span>
+        </div>
+        <div class="pv-screen">
+          <div class="pv-hero">
+            <div class="pv-eyebrow">Klinik Umum 24 Jam</div>
+            <div class="pv-clinic">Sehat <span>Sentosa</span></div>
+            <span class="pv-cta">Booking via WhatsApp →</span>
+            <svg class="pv-ekg" viewBox="0 0 120 34" preserveAspectRatio="none">
+              <polyline points="0,17 28,17 36,17 44,4 52,30 60,17 78,17 86,9 94,25 102,17 120,17"/>
+            </svg>
+          </div>
+          <div class="pv-rows">
+            <div class="pv-row"><div class="pv-ic">🩺</div><div class="pv-meta"><div class="pv-l"></div><div class="pv-l s"></div></div></div>
+            <div class="pv-row"><div class="pv-ic">📅</div><div class="pv-meta"><div class="pv-l"></div><div class="pv-l s"></div></div></div>
+            <div class="pv-row"><div class="pv-ic">📍</div><div class="pv-meta"><div class="pv-l"></div><div class="pv-l s"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="pv-toast">
+        <span class="tick"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="#04070f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div><div class="t-title">Booking baru diterima</div><div class="t-sub">Pasien &middot; 2 menit lalu</div></div>
       </div>
     </div>
   </div>
@@ -1017,6 +1188,41 @@
   </div>
 </section>
 
+<!-- FAQ -->
+<section id="faq">
+  <div class="sec-head reveal">
+    <div class="sec-label">FAQ</div>
+    <h2>Pertanyaan <span class="em">yang sering</span> ditanya</h2>
+    <p class="sec-desc">Masih ragu? Ini beberapa hal yang biasanya ditanyakan calon klien sebelum mulai.</p>
+  </div>
+  <div class="faq-wrap">
+    <details class="faq reveal">
+      <summary>Berapa lama proses pembuatannya? <span class="q-ic"></span></summary>
+      <div class="faq-a">Rata-rata 3 hari kerja untuk paket Starter, dan sekitar 5–7 hari untuk paket dengan banyak halaman. Kecepatannya tergantung kelengkapan materi yang Anda siapkan, seperti logo, foto, dan teks.</div>
+    </details>
+    <details class="faq reveal">
+      <summary>Saya nggak paham teknologi, apa bisa? <span class="q-ic"></span></summary>
+      <div class="faq-a">Sangat bisa. Anda cukup cerita kebutuhan klinik lewat WhatsApp, sisanya kami yang kerjakan — dari desain sampai website siap online. Nggak perlu ngerti coding sama sekali.</div>
+    </details>
+    <details class="faq reveal">
+      <summary>Apakah ada biaya bulanan? <span class="q-ic"></span></summary>
+      <div class="faq-a">Untuk paket Starter dan Pro tidak ada biaya bulanan. Di paket Elite, domain dan hosting tahun pertama sudah termasuk. Perpanjangan tahun berikutnya sifatnya opsional dan terjangkau.</div>
+    </details>
+    <details class="faq reveal">
+      <summary>Kalau mau revisi gimana? <span class="q-ic"></span></summary>
+      <div class="faq-a">Setiap paket sudah termasuk jatah revisi. Kami kerjakan sampai tampilannya benar-benar pas dengan keinginan Anda, sebelum website diluncurkan.</div>
+    </details>
+    <details class="faq reveal">
+      <summary>Websitenya bagus dibuka di HP? <span class="q-ic"></span></summary>
+      <div class="faq-a">Ya. Semua website kami dibuat mobile-first — tampil rapi dan cepat di HP, tablet, maupun komputer. Soalnya mayoritas pasien membuka dari HP.</div>
+    </details>
+    <details class="faq reveal">
+      <summary>Cara mulainya bagaimana? <span class="q-ic"></span></summary>
+      <div class="faq-a">Klik tombol WhatsApp di halaman ini, ceritakan kebutuhan klinik Anda, lalu kami beri rekomendasi paket yang paling cocok. Gratis dan tanpa komitmen.</div>
+    </details>
+  </div>
+</section>
+
 <!-- CTA -->
 <div class="cta reveal" id="kontak">
   <svg class="cta-pulse" viewBox="0 0 1200 70" preserveAspectRatio="none">
@@ -1050,23 +1256,23 @@
       </div>
       <div class="foot-col">
         <h4>Kontak</h4>
-        <a href="https://wa.me/6285143289159">WhatsApp</a>
-        <a href="https://wa.me/6285143289159?text=Halo,%20saya%20mau%20konsultasi">Konsultasi Gratis</a>
+        <a href="https://wa.me/6282343911156">WhatsApp</a>
+        <a href="https://wa.me/6282343911156?text=Halo,%20saya%20mau%20konsultasi">Konsultasi Gratis</a>
       </div>
     </div>
   </div>
   <div class="foot-bot">
-    <div class="foot-copy">© 2026 Clinova. Dibuat dengan ❤️ untuk klinik Indonesia.</div>
-    <div class="foot-copy">Bandung, Indonesia</div>
+    <div class="foot-copy"> ©2026 Clinova. Dibuat dengan ❤️ untuk klinik Indonesia.</div>
+    <div class="foot-copy">Kuningan, Indonesia</div>
   </div>
 </footer>
 
 <!-- FLOAT WA -->
-<a href="https://wa.me/6285143289159?text=Halo,%20saya%20tertarik%20membuat%20website%20klinik" class="wa-float" target="_blank">
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+<a href="https://wa.me/6282343911156?text=Halo,%20saya%20tertarik%20membuat%20website%20klinik" class="wa-float" target="_blank">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.358.101 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.652a11.96 11.96 0 0 0 5.71 1.448h.006c6.585 0 11.946-5.358 11.949-11.893 0-3.18-1.237-6.165-3.483-8.411"/></svg>
 </a>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- SCRIPTS -->
 <script>
 // ─── PRELOADER ───
 window.addEventListener('load', () => {
@@ -1178,7 +1384,7 @@ window.addEventListener('load', () => {
     requestAnimationFrame(ringLoop);
   }
   ringLoop();
-  document.querySelectorAll('a, button, .pcard, .svc, .price').forEach(el => {
+  document.querySelectorAll('a, button, .pcard, .svc, .price, .faq summary').forEach(el => {
     el.addEventListener('mouseenter', () => ring.classList.add('hover'));
     el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
   });
